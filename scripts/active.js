@@ -29,6 +29,21 @@ var sFlowT = getSystemProperty("arm.sflow.t") || 10;
 if(reflectorIP && reflectorAS) bgpAddNeighbor(reflectorIP,reflectorAS,reflectorID);
 if(reflectorIP6 && reflectorAS) bgpAddNeighbor(reflectorIP6,reflectorAS,reflectorID,{'ipv6':true});
 if(sFlowIP && reflectorIP && sFlowT) bgpAddSource(sFlowIP,{router:reflectorIP,router6:reflectorIP6},sFlowT,'bytes');
+
+/**
+ $ Add support for additional arm.sflow.ip addresses.
+ * these are defined in a arm.sflow.ip.additional property and separated by a semicolon.
+ * see https://github.com/sflow-rt/active-routes/issues/2
+ **/
+var sFlowIPs = getSystemProperty("arm.sflow.ip.additional");
+if (sFlowIPs && reflectorIP && sFlowT) {
+  sFlowIPs = sFlowIPs.split(';');
+  sFlowIPs.forEach(function(ip){
+    bgpAddSource(ip,{router:reflectorIP,router6:reflectorIP6},sFlowT,'bytes');
+  });
+}
+/**/
+
 if(targetIP && targetAS) bgpAddNeighbor(targetIP,targetAS,targetID);
 if(targetIP6 && targetAS) bgpAddNeighbor(targetIP6,targetAS,targetID,{'ipv6':true});
 
